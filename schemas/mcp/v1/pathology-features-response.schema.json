@@ -1,0 +1,459 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "description": "跨工具传递的短期不可变 artifact 引用，不携带原始特征向量。",
+      "properties": {
+        "artifact_id": {
+          "pattern": "^(qc|qcpermit|ctf|ctpkg|pathf|pred|rpt)_[a-f0-9]{32}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_type": {
+          "enum": [
+            "case_qc",
+            "dicom_extraction_permit",
+            "ct_features",
+            "ct_feature_package",
+            "pathology_features",
+            "prediction",
+            "report"
+          ],
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "media_type": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "artifact_type",
+        "media_type",
+        "content_sha256",
+        "created_at",
+        "expires_at"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "ErrorPayload": {
+      "additionalProperties": false,
+      "description": "可机器处理的错误明细；不允许自由文本列表或异常堆栈。",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/StatusName"
+        },
+        "field": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field"
+        },
+        "message": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "suggestion": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Suggestion"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ErrorPayload",
+      "type": "object"
+    },
+    "PathologyFeatureData": {
+      "additionalProperties": false,
+      "description": "已验证 768 维患者级病理特征摘要。",
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "extraction_performed": {
+          "const": false,
+          "title": "Extraction Performed",
+          "type": "boolean"
+        },
+        "feature_count": {
+          "const": 768,
+          "title": "Feature Count",
+          "type": "integer"
+        },
+        "heatmap_status": {
+          "const": "not_available_in_v1",
+          "title": "Heatmap Status",
+          "type": "string"
+        },
+        "input_mode": {
+          "const": "precomputed",
+          "title": "Input Mode",
+          "type": "string"
+        },
+        "pathology_feature_order_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Pathology Feature Order Sha256",
+          "type": "string"
+        },
+        "source_type": {
+          "const": "precomputed_features",
+          "title": "Source Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact",
+        "input_mode",
+        "extraction_performed",
+        "source_type",
+        "feature_count",
+        "pathology_feature_order_sha256",
+        "heatmap_status"
+      ],
+      "title": "PathologyFeatureData",
+      "type": "object"
+    },
+    "ProvenancePayload": {
+      "additionalProperties": false,
+      "description": "不含患者数据的审计来源信息。",
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "duration_ms": {
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "input_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Input Sha256",
+          "type": "string"
+        },
+        "model_feature_order_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model Feature Order Sha256"
+        },
+        "model_schema_version": {
+          "anyOf": [
+            {
+              "maxLength": 32,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model Schema Version"
+        },
+        "model_version": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model Version"
+        },
+        "service_version": {
+          "maxLength": 32,
+          "minLength": 1,
+          "title": "Service Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "service_version",
+        "model_version",
+        "model_schema_version",
+        "model_feature_order_sha256",
+        "input_sha256",
+        "created_at",
+        "duration_ms"
+      ],
+      "title": "ProvenancePayload",
+      "type": "object"
+    },
+    "StatusCode": {
+      "description": "设计规格冻结的机器状态码。",
+      "enum": [
+        2000,
+        2001,
+        4001,
+        4002,
+        4003,
+        4004,
+        4005,
+        4006,
+        4007,
+        4008,
+        4010,
+        4032,
+        4040,
+        4041,
+        4090,
+        4091,
+        4092,
+        4220,
+        4221,
+        4222,
+        4223,
+        4224,
+        4225,
+        4226,
+        4227,
+        4228,
+        5001,
+        5002,
+        5003,
+        5004,
+        5030,
+        5031
+      ],
+      "title": "StatusCode",
+      "type": "integer"
+    },
+    "StatusName": {
+      "description": "与 :class:`StatusCode` 一一对应的稳定名称。",
+      "enum": [
+        "OK",
+        "OK_WITH_WARNINGS",
+        "MISSING_MODALITY",
+        "RESEARCH_ID_MISMATCH",
+        "PII_DETECTED",
+        "INVALID_FILE_FORMAT",
+        "FEATURE_SCHEMA_MISMATCH",
+        "NON_FINITE_VALUE",
+        "INVALID_CLINICAL_CATEGORY",
+        "UNSUPPORTED_SOURCE_MODE",
+        "QC_REQUIRED_OR_FAILED",
+        "TOOL_TIMEOUT",
+        "ARTIFACT_EXPIRED",
+        "ARTIFACT_UNAVAILABLE",
+        "INVALID_STAGE_ORDER",
+        "ARTIFACT_TYPE_MISMATCH",
+        "CASE_BINDING_MISMATCH",
+        "DICOM_SERIES_NOT_FOUND",
+        "DICOM_SERIES_AMBIGUOUS",
+        "DICOM_GEOMETRY_INVALID",
+        "ROI_REQUIRED",
+        "ROI_EMPTY",
+        "ROI_GEOMETRY_MISMATCH",
+        "EXTRACTION_PROFILE_UNKNOWN",
+        "EXTRACTION_PROFILE_UNVERIFIED",
+        "MODEL_INCOMPATIBLE",
+        "BUNDLE_INTEGRITY_FAILURE",
+        "INFERENCE_FAILURE",
+        "REPORT_GENERATION_FAILURE",
+        "RADIOMICS_EXTRACTION_FAILURE",
+        "SERVICE_UNAVAILABLE",
+        "CAPACITY_EXCEEDED"
+      ],
+      "title": "StatusName",
+      "type": "string"
+    },
+    "StatusPayload": {
+      "additionalProperties": false,
+      "description": "响应的确定性状态摘要，编码、名称和严重度必须相互一致。",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/StatusCode"
+        },
+        "message": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "name": {
+          "$ref": "#/$defs/StatusName"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "name",
+        "message",
+        "severity",
+        "retryable"
+      ],
+      "title": "StatusPayload",
+      "type": "object"
+    },
+    "WarningPayload": {
+      "additionalProperties": false,
+      "description": "结构化警告；``review_required`` 明确是否提升人工复核优先级。",
+      "properties": {
+        "code": {
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "field": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field"
+        },
+        "message": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "review_required": {
+          "title": "Review Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "review_required"
+      ],
+      "title": "WarningPayload",
+      "type": "object"
+    }
+  },
+  "$id": "https://crc-lnm.local/schemas/mcp/v1/pathology-features-response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "``crc_lnm_prepare_pathology_features`` 的独立响应合同。",
+  "properties": {
+    "contract_version": {
+      "const": "1.1.0",
+      "default": "1.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "data": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PathologyFeatureData"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "errors": {
+      "items": {
+        "$ref": "#/$defs/ErrorPayload"
+      },
+      "maxItems": 20,
+      "title": "Errors",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ProvenancePayload"
+    },
+    "request_id": {
+      "format": "uuid4",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/StatusPayload"
+    },
+    "tool_name": {
+      "const": "crc_lnm_prepare_pathology_features",
+      "title": "Tool Name",
+      "type": "string"
+    },
+    "trace_id": {
+      "format": "uuid4",
+      "title": "Trace Id",
+      "type": "string"
+    },
+    "warnings": {
+      "items": {
+        "$ref": "#/$defs/WarningPayload"
+      },
+      "maxItems": 20,
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "request_id",
+    "trace_id",
+    "status",
+    "data",
+    "provenance",
+    "tool_name"
+  ],
+  "title": "PreparePathologyResponse",
+  "type": "object"
+}

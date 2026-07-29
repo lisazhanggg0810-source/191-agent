@@ -1,0 +1,29 @@
+bundle_directory: ../models/deployment_bundle
+case_root: ../demo/cases
+artifact_root: /data/artifacts
+
+host: 0.0.0.0
+port: 8000
+device: cpu
+log_level: INFO
+require_bearer_token: true
+
+artifact_ttl_seconds: 1800
+max_request_body_bytes: 1048576
+max_case_file_bytes: 16777216
+max_artifact_bytes: 16777216
+max_artifacts_per_trace: 10
+max_artifact_store_bytes: 268435456
+tool_timeout_seconds: 120
+max_concurrency: 2
+
+allowed_origins:
+  - http://nexent:3000
+  - http://127.0.0.1
+  - http://localhost
+allowed_hosts:
+  - crc-lnm-mcp:*
+  - 127.0.0.1:*
+  - localhost:*
+
+dicom_radiomics_mode: "off"

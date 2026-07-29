@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>CRC-LNM科研辅助报告</title>
+</head>
+<body>
+  <h1>CRC-LNM科研辅助报告</h1>
+  <section id="case_summary">
+    <h2>病例研究标识</h2>
+    <p>{{ case_ref }}</p>
+  </section>
+  <section id="input_quality">
+    <h2>输入质控</h2>
+    <p>预提取CT、病理及临床输入已通过确定性质控。{{ fallback_text }}</p>
+  </section>
+  <section id="model_score">
+    <h2>模型评分</h2>
+    <p>阳性概率：{{ "%.6f"|format(probability) }}；部署阈值：{{ "%.6f"|format(threshold) }}；辅助分类：{{ predicted_class }}；阈值距离分层：{{ proximity }}。</p>
+    <p>模型版本：{{ model_version }}</p>
+  </section>
+  <section id="limitations">
+    <h2>局限性</h2>
+    <p>当前全量重训练权重无独立测试声明；OOF ROC-AUC 0.7749仅为开发阶段参考。本版本不提供原始WSI、DICOM提取、病理空间热图或单特征因果解释。</p>
+  </section>
+  <section id="expert_review">
+    <h2>人工复核</h2>
+    <p>所有输出均需由具备资质的专业人员结合完整临床资料解释。</p>
+  </section>
+  <section id="safety_statement">
+    <h2>安全声明</h2>
+    <p>{{ safety_statement }}</p>
+  </section>
+</body>
+</html>

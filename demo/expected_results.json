@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "expectations": {
+    "demo_case_001": {
+      "input_kind": "patient_free_zero_feature_synthetic_case",
+      "positive_probability": 0.6279473900794983,
+      "threshold": 0.3529504342004657,
+      "predicted_class": 1,
+      "model_version": "003636d691d603908f8bd913b5ab7769a5e1479680c7f8317cda1d106e8bf73f",
+      "probability_tolerance": 1e-8
+    }
+  },
+  "note": "demo_case_001 的精确概率来自真实五成员 PredictionService 与 HTTP MCP 双路径工程回归；该合成病例不代表临床性能。"
+}

@@ -1,0 +1,43 @@
+{
+  "$defs": {
+    "EmptyInput": {
+      "additionalProperties": false,
+      "description": "只读模型信息工具必须接收真正的空对象。",
+      "properties": {},
+      "title": "EmptyInput",
+      "type": "object"
+    }
+  },
+  "$id": "https://crc-lnm.local/schemas/mcp/v1/model-info-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "模型信息请求；故意不声明 ``case_ref``，夹带该字段会被拒绝。",
+  "properties": {
+    "contract_version": {
+      "const": "1.1.0",
+      "default": "1.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "input": {
+      "$ref": "#/$defs/EmptyInput"
+    },
+    "request_id": {
+      "format": "uuid4",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "trace_id": {
+      "format": "uuid4",
+      "title": "Trace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "trace_id",
+    "input"
+  ],
+  "title": "GetModelInfoRequest",
+  "type": "object"
+}

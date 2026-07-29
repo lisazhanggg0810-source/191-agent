@@ -1,0 +1,58 @@
+{
+  "$defs": {
+    "PreparePathologyInput": {
+      "additionalProperties": false,
+      "description": "病理准备工具只接受已通过质控的 artifact。",
+      "properties": {
+        "qc_artifact_id": {
+          "pattern": "^qc_[a-f0-9]{32}$",
+          "title": "Qc Artifact Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "qc_artifact_id"
+      ],
+      "title": "PreparePathologyInput",
+      "type": "object"
+    }
+  },
+  "$id": "https://crc-lnm.local/schemas/mcp/v1/pathology-features-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "768 维患者级病理特征准备请求。",
+  "properties": {
+    "case_ref": {
+      "pattern": "^[A-Za-z0-9_-]{1,64}$",
+      "title": "Case Ref",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "1.1.0",
+      "default": "1.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "input": {
+      "$ref": "#/$defs/PreparePathologyInput"
+    },
+    "request_id": {
+      "format": "uuid4",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "trace_id": {
+      "format": "uuid4",
+      "title": "Trace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "trace_id",
+    "case_ref",
+    "input"
+  ],
+  "title": "PreparePathologyRequest",
+  "type": "object"
+}

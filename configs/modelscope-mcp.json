@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "crc-lnm-research-assistant": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--extra",
+        "mcp",
+        "crc-lnm-mcp",
+        "--config",
+        "configs/mcp.local.yaml",
+        "--transport",
+        "stdio"
+      ]
+    }
+  }
+}

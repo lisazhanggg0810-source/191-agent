@@ -1,0 +1,62 @@
+{
+  "$defs": {
+    "CaseQCInput": {
+      "additionalProperties": false,
+      "description": "病例质控的来源选择策略，不允许请求改变服务端能力开关。",
+      "properties": {
+        "ct_source_preference": {
+          "const": "precomputed",
+          "default": "precomputed",
+          "title": "Ct Source Preference",
+          "type": "string"
+        },
+        "fallback_policy": {
+          "const": "precomputed_if_available",
+          "default": "precomputed_if_available",
+          "title": "Fallback Policy",
+          "type": "string"
+        }
+      },
+      "title": "CaseQCInput",
+      "type": "object"
+    }
+  },
+  "$id": "https://crc-lnm.local/schemas/mcp/v1/case-qc-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "病例数据完整性与隐私质控请求。",
+  "properties": {
+    "case_ref": {
+      "pattern": "^[A-Za-z0-9_-]{1,64}$",
+      "title": "Case Ref",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "1.1.0",
+      "default": "1.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "input": {
+      "$ref": "#/$defs/CaseQCInput"
+    },
+    "request_id": {
+      "format": "uuid4",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "trace_id": {
+      "format": "uuid4",
+      "title": "Trace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "trace_id",
+    "case_ref",
+    "input"
+  ],
+  "title": "CaseQCRequest",
+  "type": "object"
+}

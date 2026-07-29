@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "cases": [
+    {
+      "case_ref": "demo_case_001",
+      "purpose": "零值合成特征的完整六工具链黄金回归病例",
+      "expected_terminal_stage": "crc_lnm_generate_report"
+    }
+  ]
+}

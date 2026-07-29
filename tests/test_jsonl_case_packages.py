@@ -1,0 +1,34 @@
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+from wei_multimodal.mcp_server.case_repository import CaseRepository
+
+RELEASE_ROOT = Path(__file__).resolve().parents[1]
+JSONL_SOURCE = RELEASE_ROOT / "data/release_case_package_groups.jsonl"
+BUILDER_SOURCE = RELEASE_ROOT / "scripts/build_case_packages.py"
+
+
+def _load_builder():
+    spec = importlib.util.spec_from_file_location("case_package_builder", BUILDER_SOURCE)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_release_jsonl_builds_allowlisted_case_packages(tmp_path: Path) -> None:
+    builder = _load_builder()
+    case_root = tmp_path / "cases"
+
+    assert builder.build_case_packages(JSONL_SOURCE, case_root) == 142
+    assert len([path for path in case_root.iterdir() if path.is_dir()]) == 142
+
+    repository = CaseRepository(case_root)
+    case = repository.load("PA1104647")
+
+    assert case.manifest.input_mode == "precomputed"
+    assert len(repository.read_ct_features(case)) == 1409
+    assert len(repository.read_pathology_features(case)) == 768
+    assert set(repository.read_clinical(case)) == {"age", "male", "Type", "T"}

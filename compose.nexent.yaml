@@ -1,0 +1,39 @@
+name: crc-lnm-mcp
+
+services:
+  crc-lnm-mcp:
+    container_name: crc-lnm-mcp
+    image: crc-lnm-mcp:competition
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      CRC_LNM_MCP_CONFIG: /app/configs/mcp.yaml
+      CRC_LNM_MCP_BEARER_TOKEN: ${CRC_LNM_MCP_BEARER_TOKEN:?Set CRC_LNM_MCP_BEARER_TOKEN from the platform Secret}
+      CRC_LNM_MCP_ALLOWED_HOSTS: "crc-lnm-mcp:*,localhost:*,127.0.0.1:*"
+      CRC_LNM_MCP_ALLOWED_ORIGINS: ${CRC_LNM_MCP_ALLOWED_ORIGINS:-http://nexent-web:3000,http://nexent:3000}
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-m", "wei_multimodal.mcp_server.healthcheck"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+    volumes:
+      - crc-lnm-mcp-artifacts:/data/artifacts
+    networks:
+      nexent:
+        aliases:
+          - crc-lnm-mcp
+
+networks:
+  nexent:
+    external: true
+    name: ${NEXENT_DOCKER_NETWORK:-nexent_network}
+
+volumes:
+  crc-lnm-mcp-artifacts:
+

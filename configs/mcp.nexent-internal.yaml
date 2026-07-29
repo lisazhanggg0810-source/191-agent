@@ -1,0 +1,28 @@
+# 仅限 Nexent 无法注入 Authorization Header 且容器仅在平台隔离内网可访问时使用。
+# 禁止把此配置暴露到公网或不受信任网络。
+bundle_directory: ../models/deployment_bundle
+case_root: ../demo/cases
+artifact_root: /data/artifacts
+
+host: 0.0.0.0
+port: 8000
+device: cpu
+log_level: INFO
+require_bearer_token: false
+
+artifact_ttl_seconds: 1800
+max_request_body_bytes: 1048576
+max_case_file_bytes: 16777216
+max_artifact_bytes: 16777216
+max_artifacts_per_trace: 10
+max_artifact_store_bytes: 268435456
+tool_timeout_seconds: 120
+max_concurrency: 2
+
+allowed_origins:
+  - http://nexent:3000
+allowed_hosts:
+  - crc-lnm-mcp:*
+  - localhost:*
+
+dicom_radiomics_mode: "off"

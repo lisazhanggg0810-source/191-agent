@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crc-lnm-medical-agent"
+version = "1.0.0"
+description = "Containerized CRC-LNM research-assistance MCP for Nexent"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = []
+
+[project.optional-dependencies]
+mcp = [
+    "mcp[cli]>=1.27,<2",
+    "numpy>=2.1,<3",
+    "pandas>=2.2,<3",
+    "pydantic>=2.11,<3",
+    "pyyaml>=6,<7",
+    "scikit-learn>=1.6,<2",
+    "imbalanced-learn>=0.13,<1",
+    "jinja2>=3.1,<4",
+    "torch>=2.9,<3",
+]
+validation = [
+    "httpx>=0.28,<1",
+    "mypy>=1.17,<2",
+    "psutil>=7,<8",
+    "pytest>=8.3,<9",
+    "pytest-cov>=6,<7",
+    "ruff>=0.12,<1",
+    "types-PyYAML>=6.0.12,<7",
+]
+[project.scripts]
+crc-lnm-mcp = "wei_multimodal.mcp_server.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"wei_multimodal.mcp_server" = ["templates/*.j2"]
+
+# GitHub 托管入口使用 uv 安装依赖时固定选择 CPU 版 PyTorch，避免默认索引拉取
+# 不需要的 CUDA 运行库。Dockerfile 仍显式使用同一 CPU 索引。
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+ignore_missing_imports = true
+files = ["src"]

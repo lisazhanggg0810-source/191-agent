@@ -1,0 +1,64 @@
+{
+  "$defs": {
+    "GenerateReportInput": {
+      "additionalProperties": false,
+      "description": "确定性报告仅引用 QC 与预测结果，不接收外部知识文本。",
+      "properties": {
+        "prediction_artifact_id": {
+          "pattern": "^pred_[a-f0-9]{32}$",
+          "title": "Prediction Artifact Id",
+          "type": "string"
+        },
+        "qc_artifact_id": {
+          "pattern": "^qc_[a-f0-9]{32}$",
+          "title": "Qc Artifact Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "qc_artifact_id",
+        "prediction_artifact_id"
+      ],
+      "title": "GenerateReportInput",
+      "type": "object"
+    }
+  },
+  "$id": "https://crc-lnm.local/schemas/mcp/v1/report-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "结构化科研辅助报告请求。",
+  "properties": {
+    "case_ref": {
+      "pattern": "^[A-Za-z0-9_-]{1,64}$",
+      "title": "Case Ref",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "1.1.0",
+      "default": "1.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "input": {
+      "$ref": "#/$defs/GenerateReportInput"
+    },
+    "request_id": {
+      "format": "uuid4",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "trace_id": {
+      "format": "uuid4",
+      "title": "Trace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "trace_id",
+    "case_ref",
+    "input"
+  ],
+  "title": "GenerateReportRequest",
+  "type": "object"
+}

@@ -1,0 +1,131 @@
+{
+  "$defs": {
+    "ClinicalInput": {
+      "additionalProperties": false,
+      "description": "与现有 ``PredictionService`` 一致的四项临床输入。\n\n``Type`` 与 ``T`` 的训练词表依赖具体部署包，因此合同层只保证它们是\n有限数值，业务层再依据当前预处理器词表做精确类别校验。",
+      "properties": {
+        "T": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "T"
+        },
+        "Type": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Type"
+        },
+        "age": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "ge": 0,
+          "le": 120,
+          "title": "Age"
+        },
+        "male": {
+          "enum": [
+            0,
+            1
+          ],
+          "title": "Male",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "age",
+        "male",
+        "Type",
+        "T"
+      ],
+      "title": "ClinicalInput",
+      "type": "object"
+    },
+    "PredictMultimodalInput": {
+      "additionalProperties": false,
+      "description": "多模态预测只接受同一工作流产生的三个 artifact 和临床字段。",
+      "properties": {
+        "clinical": {
+          "$ref": "#/$defs/ClinicalInput"
+        },
+        "ct_artifact_id": {
+          "pattern": "^ctf_[a-f0-9]{32}$",
+          "title": "Ct Artifact Id",
+          "type": "string"
+        },
+        "pathology_artifact_id": {
+          "pattern": "^pathf_[a-f0-9]{32}$",
+          "title": "Pathology Artifact Id",
+          "type": "string"
+        },
+        "qc_artifact_id": {
+          "pattern": "^qc_[a-f0-9]{32}$",
+          "title": "Qc Artifact Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "qc_artifact_id",
+        "ct_artifact_id",
+        "pathology_artifact_id",
+        "clinical"
+      ],
+      "title": "PredictMultimodalInput",
+      "type": "object"
+    }
+  },
+  "$id": "https://crc-lnm.local/schemas/mcp/v1/prediction-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "五模型多模态融合预测请求。",
+  "properties": {
+    "case_ref": {
+      "pattern": "^[A-Za-z0-9_-]{1,64}$",
+      "title": "Case Ref",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "1.1.0",
+      "default": "1.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "input": {
+      "$ref": "#/$defs/PredictMultimodalInput"
+    },
+    "request_id": {
+      "format": "uuid4",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "trace_id": {
+      "format": "uuid4",
+      "title": "Trace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "trace_id",
+    "case_ref",
+    "input"
+  ],
+  "title": "PredictMultimodalRequest",
+  "type": "object"
+}

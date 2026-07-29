@@ -1,0 +1,78 @@
+{
+  "$defs": {
+    "PrecomputedCTSource": {
+      "additionalProperties": false,
+      "description": "选择病例包中已获批准的预提取 CT 特征。",
+      "properties": {
+        "mode": {
+          "const": "precomputed",
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "title": "PrecomputedCTSource",
+      "type": "object"
+    },
+    "PrepareCTInput": {
+      "additionalProperties": false,
+      "description": "CT 准备工具的精确输入。",
+      "properties": {
+        "qc_artifact_id": {
+          "pattern": "^qc_[a-f0-9]{32}$",
+          "title": "Qc Artifact Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/PrecomputedCTSource"
+        }
+      },
+      "required": [
+        "qc_artifact_id",
+        "source"
+      ],
+      "title": "PrepareCTInput",
+      "type": "object"
+    }
+  },
+  "$id": "https://crc-lnm.local/schemas/mcp/v1/ct-features-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "1409 维 CT 特征准备请求。",
+  "properties": {
+    "case_ref": {
+      "pattern": "^[A-Za-z0-9_-]{1,64}$",
+      "title": "Case Ref",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "1.1.0",
+      "default": "1.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "input": {
+      "$ref": "#/$defs/PrepareCTInput"
+    },
+    "request_id": {
+      "format": "uuid4",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "trace_id": {
+      "format": "uuid4",
+      "title": "Trace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "trace_id",
+    "case_ref",
+    "input"
+  ],
+  "title": "PrepareCTRequest",
+  "type": "object"
+}
