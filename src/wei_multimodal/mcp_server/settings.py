@@ -3,11 +3,18 @@
 from __future__ import annotations
 
 import os
+import tempfile
 from pathlib import Path
 from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+
+def _default_artifact_root() -> Path:
+    """Return a writable cross-platform directory for ephemeral MCP artifacts."""
+
+    return Path(tempfile.gettempdir()) / "crc_lnm_artifacts"
 
 
 class MCPSettings(BaseModel):
@@ -21,7 +28,7 @@ class MCPSettings(BaseModel):
 
     bundle_directory: Path
     case_root: Path
-    artifact_root: Path
+    artifact_root: Path = Field(default_factory=_default_artifact_root)
     host: str = "127.0.0.1"
     port: int = Field(default=8000, ge=1, le=65535)
     device: Literal["cpu"] = "cpu"
@@ -105,6 +112,8 @@ def load_mcp_settings(
         if variable in environment:
             payload[field] = converter(environment[variable])
     for field in ("bundle_directory", "case_root", "artifact_root"):
+        if field not in payload:
+            continue
         value = Path(str(payload[field]))
         payload[field] = (
             value.resolve()

@@ -4,9 +4,9 @@
 
 > 仅用于科研辅助和病例复核，不替代病理诊断、治疗建议或临床最终决策。
 
-## GitHub 快速创建
+## ModelScope Hosted 创建
 
-截图中的创建失败并非模型或 Docker 构建失败，而是平台把 README 中错误的根 JSON 当作“服务配置”解析。平台要求根字段为 `mcpServers`，而旧示例的根字段是环境变量名，因此校验失败。
+Hosted 部署使用发布到 PyPI 的自包含安装包。ModelScope 不需要进入 GitHub 工作目录，也不依赖仓库根目录下的模型、病例或 YAML 文件。
 
 在“从 GitHub 仓库快速创建”的“服务配置”框内，粘贴 [configs/modelscope-mcp.json](configs/modelscope-mcp.json) 的完整内容：
 
@@ -14,14 +14,13 @@
 {
   "mcpServers": {
     "crc-lnm-research-assistant": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
-        "--extra",
-        "mcp",
+        "--index",
+        "https://download.pytorch.org/whl/cpu",
+        "--from",
+        "crc-lnm-medical-agent==1.0.1",
         "crc-lnm-mcp",
-        "--config",
-        "configs/mcp.local.yaml",
         "--transport",
         "stdio"
       ]
@@ -30,7 +29,7 @@
 }
 ```
 
-该配置以标准输入输出（stdio）运行。托管平台负责启动该进程并转发 MCP 消息，所以这里不填 URL、端口、Docker 命令或 Bearer token。不要把环境变量字段定义粘贴到“服务配置”框。
+该配置通过 `uvx` 从 PyPI 创建隔离环境，并以标准输入输出（stdio）运行。包内包含经过完整性校验的模型、托管 YAML 和演示病例；临时 artifact 写入系统临时目录。托管平台负责启动进程并转发 MCP 消息，所以这里不填 URL、端口、Docker 命令或 Bearer token。云端输出协议选择 `streamable_http`。
 
 ## 功能边界
 
@@ -57,9 +56,9 @@
 需要 Python 3.12 或 3.13 和 `uv`。在项目根目录执行：
 
 ```powershell
-uv sync --extra mcp --extra validation
-uv run --extra mcp --extra validation pytest -q
-uv run --extra mcp crc-lnm-mcp --config configs/mcp.local.yaml --transport stdio
+uv sync --extra validation
+uv run pytest -q
+uv run crc-lnm-mcp --config configs/mcp.local.yaml --transport stdio
 ```
 
 本地 stdio 配置不启用 Bearer 校验，仅用于同一受控主机上的 MCP 客户端或托管平台子进程。它会在 `artifacts_local/` 写入短期运行 artifact；该目录不属于发布内容。
@@ -82,12 +81,13 @@ docker run --rm -p 8000:8000 `
 ## 项目结构
 
 - `configs/modelscope-mcp.json`：可直接导入的标准 `mcpServers` 服务配置。
-- `configs/mcp.local.yaml`：GitHub 托管与本地 stdio 运行配置。
+- `configs/mcp.local.yaml`：仓库内本地 stdio 运行配置。
 - `configs/mcp.yaml`：Docker/HTTP 的安全默认配置。
 - `src/`：MCP、模型加载、输入校验和报告代码。
+- `src/wei_multimodal/resources/`：发布到 wheel 的托管配置、模型和演示病例。
 - `models/deployment_bundle/`：经完整性校验的五成员模型。
 - `data/` 与 `scripts/build_case_packages.py`：Docker 构建期的白名单病例包数据及转换器。
 - `demo/cases/demo_case_001/`：无患者信息的合成黄金回归病例。
 - `docs/`：部署、智能体提示词、模型卡、测试报告与提交清单。
 
-完整平台操作见 [使用说明](使用说明.md) 和 [平台容器部署说明](docs/PLATFORM_DEPLOYMENT.md)。
+完整平台操作见 [ModelScope MCP Hosted 部署操作手册](ModelScope-MCP-Hosted-部署操作手册.md)、[使用说明](使用说明.md) 和 [平台容器部署说明](docs/PLATFORM_DEPLOYMENT.md)。

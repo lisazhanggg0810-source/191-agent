@@ -115,7 +115,12 @@ def generate_report(
         media_type="text/html; charset=utf-8",
         payload=html,
     )
-    fallback_used = bool(prediction["fallback_used"])
+    if bool(prediction["fallback_used"]):
+        raise ContractError(
+            ErrorCode.INVALID_STAGE_ORDER,
+            message="The prediction artifact is incompatible with this report version.",
+            field="prediction_artifact_id",
+        )
     ct_source_used_value = prediction.get("ct_source_used", "precomputed")
     return ReportData(
         artifact=artifact_ref(metadata),
@@ -125,7 +130,7 @@ def generate_report(
         heatmap_status="not_available_in_v1",
         feature_attribution_status="not_available_in_v1",
         ct_source_used=ct_source_used_value,
-        fallback_disclosed=fallback_used,
+        fallback_disclosed=False,
         safety_statement=SAFETY_STATEMENT,
     )
 

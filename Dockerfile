@@ -21,7 +21,7 @@ COPY pyproject.toml /build/pyproject.toml
 COPY src /build/src
 RUN python -m pip install --upgrade pip \
     && python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.9,<3" \
-    && python -m pip install "/build[mcp]" \
+    && python -m pip install "/build" \
     && rm -rf /build
 
 COPY configs /app/configs

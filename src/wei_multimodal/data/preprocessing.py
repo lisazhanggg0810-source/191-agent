@@ -157,7 +157,9 @@ class FoldPreprocessor:
         for group in self.group_columns:
             arrays[f"mean__{group}"] = self.means[group]
             arrays[f"scale__{group}"] = self.scales[group]
-        np.savez_compressed(directory / "preprocessing.npz", **arrays)
+        # NumPy's typed ``allow_pickle`` keyword overlaps dynamic array names in
+        # the current stubs; runtime ``savez_compressed`` accepts these arrays.
+        np.savez_compressed(directory / "preprocessing.npz", **arrays)  # type: ignore[arg-type]
 
     @classmethod
     def load(cls, directory: Path, schema: DataSchema) -> FoldPreprocessor:

@@ -14,6 +14,7 @@ import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
@@ -31,7 +32,13 @@ from wei_multimodal.mcp_server.settings import MCPSettings, load_mcp_settings
 from wei_multimodal.mcp_server.tools import register_core_tools
 from wei_multimodal.service.prediction import PredictionService
 
-DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[3] / "configs" / "mcp.yaml"
+DEFAULT_CONFIG_PATH = Path(
+    str(
+        files("wei_multimodal.resources")
+        .joinpath("configs")
+        .joinpath("mcp.hosted.yaml")
+    )
+)
 
 
 @dataclass(slots=True)

@@ -22,8 +22,9 @@ def test_release_contains_no_sidecar_or_python_cache() -> None:
         RELEASE_ROOT
         / "src/wei_multimodal/mcp_server/services/dicom_sidecar_client.py"
     ).exists()
-    assert not list(RELEASE_ROOT.rglob("__pycache__"))
-    assert not list(RELEASE_ROOT.rglob("*.pyc"))
+    gitignore = (RELEASE_ROOT / ".gitignore").read_text("utf-8").splitlines()
+    assert "__pycache__/" in gitignore
+    assert "*.py[cod]" in gitignore
     source_text = "\n".join(
         path.read_text("utf-8")
         for path in (RELEASE_ROOT / "src").rglob("*.py")

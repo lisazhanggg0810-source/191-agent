@@ -1,14 +1,13 @@
 {
   "mcpServers": {
     "crc-lnm-research-assistant": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
-        "--extra",
-        "mcp",
+        "--index",
+        "https://download.pytorch.org/whl/cpu",
+        "--from",
+        "crc-lnm-medical-agent==1.0.1",
         "crc-lnm-mcp",
-        "--config",
-        "configs/mcp.local.yaml",
         "--transport",
         "stdio"
       ]
