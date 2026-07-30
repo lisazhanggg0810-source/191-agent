@@ -1,0 +1,26 @@
+bundle_directory: models/deployment_bundle
+case_root: cases
+artifact_root: artifacts
+case_package_jsonl: release_case_package_groups.jsonl
+
+host: 127.0.0.1
+port: 8000
+device: cpu
+log_level: INFO
+require_bearer_token: false
+
+artifact_ttl_seconds: 1800
+max_request_body_bytes: 1048576
+max_case_file_bytes: 16777216
+max_artifact_bytes: 16777216
+max_artifacts_per_trace: 10
+max_artifact_store_bytes: 268435456
+tool_timeout_seconds: 120
+max_concurrency: 2
+
+allowed_origins:
+  - http://127.0.0.1
+  - http://localhost
+allowed_hosts:
+  - 127.0.0.1:*
+  - localhost:*

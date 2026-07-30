@@ -3,11 +3,7 @@
     "crc-lnm-research-assistant": {
       "command": "uvx",
       "args": [
-        "--index",
-        "https://download.pytorch.org/whl/cpu",
-        "--from",
-        "crc-lnm-medical-agent==1.0.1",
-        "crc-lnm-mcp",
+        "crc-lnm-medical-agent@latest",
         "--transport",
         "stdio"
       ]

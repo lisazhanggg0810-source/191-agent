@@ -26,14 +26,21 @@ from wei_multimodal.mcp_server.contracts import (
 )
 from wei_multimodal.mcp_server.contracts.inputs import BaseRequest
 from wei_multimodal.mcp_server.errors import ContractError, ErrorCode
+from wei_multimodal.mcp_server.execution import tool_execution_deadline
 from wei_multimodal.mcp_server.services import RuntimeDependencies
 
-SERVICE_VERSION = "0.1.0"
+SERVICE_VERSION = "1.0.0"
 LOGGER = logging.getLogger(__name__)
 READ_ONLY_ANNOTATIONS = ToolAnnotations(
     readOnlyHint=True,
     destructiveHint=False,
     idempotentHint=True,
+    openWorldHint=False,
+)
+ARTIFACT_WRITING_ANNOTATIONS = ToolAnnotations(
+    readOnlyHint=False,
+    destructiveHint=False,
+    idempotentHint=False,
     openWorldHint=False,
 )
 
@@ -128,13 +135,27 @@ async def execute_tool[
     """
 
     started = time.perf_counter()
+    deadline = time.monotonic() + runtime.tool_timeout_seconds
     try:
 
         async def run_with_capacity_limit() -> DataT:
-            """Use one shared slot and move blocking model/file work off the event loop."""
+            """Retain capacity until a timed-out worker has actually finished."""
 
-            async with runtime.tool_semaphore:
-                return await asyncio.to_thread(operation)
+            await runtime.tool_semaphore.acquire()
+
+            def run_operation() -> DataT:
+                with tool_execution_deadline(deadline):
+                    return operation()
+
+            task = asyncio.create_task(asyncio.to_thread(run_operation))
+
+            def release_capacity(completed: asyncio.Task[DataT]) -> None:
+                if not completed.cancelled():
+                    completed.exception()
+                runtime.tool_semaphore.release()
+
+            task.add_done_callback(release_capacity)
+            return await asyncio.shield(task)
 
         data = await asyncio.wait_for(
             run_with_capacity_limit(),
@@ -213,6 +234,7 @@ async def execute_tool[
 
 
 __all__ = [
+    "ARTIFACT_WRITING_ANNOTATIONS",
     "READ_ONLY_ANNOTATIONS",
     "execute_tool",
     "runtime_from_context",

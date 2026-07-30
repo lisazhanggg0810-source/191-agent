@@ -25,5 +25,3 @@ allowed_hosts:
   - crc-lnm-mcp:*
   - 127.0.0.1:*
   - localhost:*
-
-dicom_radiomics_mode: "off"

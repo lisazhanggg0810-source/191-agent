@@ -6,7 +6,6 @@
 artifacts_local/
 tests/
 docs/
-schemas/
 .git/
 .gitignore
 *.log

@@ -5,16 +5,14 @@
       "description": "跨工具传递的短期不可变 artifact 引用，不携带原始特征向量。",
       "properties": {
         "artifact_id": {
-          "pattern": "^(qc|qcpermit|ctf|ctpkg|pathf|pred|rpt)_[a-f0-9]{32}$",
+          "pattern": "^(qc|ctf|pathf|pred|rpt)_[a-f0-9]{32}$",
           "title": "Artifact Id",
           "type": "string"
         },
         "artifact_type": {
           "enum": [
             "case_qc",
-            "dicom_extraction_permit",
             "ct_features",
-            "ct_feature_package",
             "pathology_features",
             "prediction",
             "report"
@@ -71,6 +69,7 @@
           "type": "string"
         },
         "extraction_performed": {
+          "const": false,
           "title": "Extraction Performed",
           "type": "boolean"
         },
@@ -83,18 +82,12 @@
           "$ref": "#/$defs/CTGroupCounts"
         },
         "input_mode": {
-          "enum": [
-            "precomputed",
-            "ct_package"
-          ],
+          "const": "precomputed",
           "title": "Input Mode",
           "type": "string"
         },
         "source_type": {
-          "enum": [
-            "precomputed_features",
-            "sidecar_ctpkg"
-          ],
+          "const": "precomputed_features",
           "title": "Source Type",
           "type": "string"
         }
@@ -151,10 +144,7 @@
       "description": "核心 V1 预提取 CT 或已验签侧车 CT 的服务端兼容性结论。",
       "properties": {
         "basis": {
-          "enum": [
-            "approved_precomputed_case_package",
-            "sidecar_validated_ctpkg"
-          ],
+          "const": "approved_precomputed_case_package",
           "title": "Basis",
           "type": "string"
         },
@@ -338,19 +328,10 @@
         4090,
         4091,
         4092,
-        4220,
-        4221,
-        4222,
-        4223,
-        4224,
-        4225,
-        4226,
-        4227,
         4228,
         5001,
         5002,
         5003,
-        5004,
         5030,
         5031
       ],
@@ -377,19 +358,10 @@
         "INVALID_STAGE_ORDER",
         "ARTIFACT_TYPE_MISMATCH",
         "CASE_BINDING_MISMATCH",
-        "DICOM_SERIES_NOT_FOUND",
-        "DICOM_SERIES_AMBIGUOUS",
-        "DICOM_GEOMETRY_INVALID",
-        "ROI_REQUIRED",
-        "ROI_EMPTY",
-        "ROI_GEOMETRY_MISMATCH",
-        "EXTRACTION_PROFILE_UNKNOWN",
-        "EXTRACTION_PROFILE_UNVERIFIED",
         "MODEL_INCOMPATIBLE",
         "BUNDLE_INTEGRITY_FAILURE",
         "INFERENCE_FAILURE",
         "REPORT_GENERATION_FAILURE",
-        "RADIOMICS_EXTRACTION_FAILURE",
         "SERVICE_UNAVAILABLE",
         "CAPACITY_EXCEEDED"
       ],

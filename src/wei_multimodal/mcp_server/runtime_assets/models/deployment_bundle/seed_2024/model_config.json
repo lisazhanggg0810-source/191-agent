@@ -1,0 +1,19 @@
+{
+  "architecture": "attention_path_ct_clinical",
+  "clinical_features": [
+    "age",
+    "male",
+    "Type",
+    "T"
+  ],
+  "clinical_policy": "aggressive",
+  "dropout": 0.2,
+  "final_training_loss": 0.06297425784818504,
+  "fixed_epochs": 13,
+  "hidden_dim": 128,
+  "include_clinical": true,
+  "num_heads": 4,
+  "seed": 2024,
+  "t_stage_vocab_size": 8,
+  "type_vocab_size": 4
+}

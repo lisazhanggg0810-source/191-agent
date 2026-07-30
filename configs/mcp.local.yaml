@@ -3,8 +3,9 @@
 # Docker / HTTP 部署应使用 configs/mcp.yaml；该配置仅适用于平台子进程或受控本机。
 
 bundle_directory: ../models/deployment_bundle
-case_root: ../demo/cases
+case_root: ../artifacts_local/cases
 artifact_root: ../artifacts_local
+case_package_jsonl: ../data/release_case_package_groups.jsonl
 
 host: 127.0.0.1
 port: 8000
@@ -27,5 +28,3 @@ allowed_origins:
 allowed_hosts:
   - 127.0.0.1:*
   - localhost:*
-
-dicom_radiomics_mode: "off"

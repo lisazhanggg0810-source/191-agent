@@ -1,9 +1,4 @@
-"""六个核心 MCP 工具的精确请求合同。
-
-每个工具拥有独立的 ``input`` 模型，禁止用 ``dict[str, Any]`` 绕过字段白名单。
-DICOM 提取工具不属于本模块；CT 合同中的 ``ct_package`` 仅保留设计规定的、
-供未来已验证侧车 artifact 接入的受控引用接口。
-"""
+"""六个核心 MCP 工具的预计算特征请求合同。"""
 
 from __future__ import annotations
 

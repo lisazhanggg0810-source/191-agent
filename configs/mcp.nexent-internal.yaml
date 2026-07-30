@@ -24,5 +24,3 @@ allowed_origins:
 allowed_hosts:
   - crc-lnm-mcp:*
   - localhost:*
-
-dicom_radiomics_mode: "off"

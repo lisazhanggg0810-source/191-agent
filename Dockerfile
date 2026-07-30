@@ -1,8 +1,11 @@
 # syntax=docker/dockerfile:1.7
+FROM ghcr.io/astral-sh/uv:0.7.19 AS uv
+
 FROM python:3.13-slim AS case_builder
 
 WORKDIR /build
 COPY scripts/build_case_packages.py /build/build_case_packages.py
+COPY src /build/src
 COPY data/release_case_package_groups.jsonl /build/release_case_package_groups.jsonl
 RUN python /build/build_case_packages.py \
     --input /build/release_case_package_groups.jsonl \
@@ -12,21 +15,21 @@ FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    CRC_LNM_MCP_CONFIG=/app/configs/mcp.yaml
+    CRC_LNM_MCP_CONFIG=/app/configs/mcp.yaml \
+    PATH=/app/.venv/bin:$PATH
 
 WORKDIR /app
 
-COPY pyproject.toml /build/pyproject.toml
-COPY src /build/src
-RUN python -m pip install --upgrade pip \
-    && python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.9,<3" \
-    && python -m pip install "/build" \
-    && rm -rf /build
+COPY --from=uv /uv /uvx /bin/
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --extra mcp --no-install-project
+COPY src ./src
+RUN uv sync --locked --no-dev --extra mcp
 
 COPY configs /app/configs
 COPY models /app/models
 COPY demo /app/demo
+COPY schemas /app/schemas
 COPY --from=case_builder /build/cases/ /app/demo/cases/
 
 RUN addgroup --system mcp \

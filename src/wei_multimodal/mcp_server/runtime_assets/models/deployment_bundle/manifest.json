@@ -1,0 +1,66 @@
+{
+  "architecture": "attention_path_ct_clinical",
+  "bundle_format_version": "1.0.0",
+  "bundle_type": "deployment",
+  "clinical_features": [
+    "age",
+    "male",
+    "Type",
+    "T"
+  ],
+  "clinical_policy": "aggressive",
+  "environment": {
+    "cuda_runtime": "13.0",
+    "python": "3.13.14",
+    "torch": "2.12.1+cu130"
+  },
+  "feature_order_sha256": "d4a5ecb56733db87f505473a7be1497a7fdd174c0994748d5b9574f7373d3200",
+  "independent_test_claim": false,
+  "members": [
+    {
+      "directory": "seed_2024",
+      "seed": 2024
+    },
+    {
+      "directory": "seed_3407",
+      "seed": 3407
+    },
+    {
+      "directory": "seed_5280",
+      "seed": 5280
+    },
+    {
+      "directory": "seed_7319",
+      "seed": 7319
+    },
+    {
+      "directory": "seed_9021",
+      "seed": 9021
+    }
+  ],
+  "payload_sha256": {
+    "preprocessing.json": "7630557a859cebc1320db5bb3a194e4f2571210c61a95ff8c15897e457667edb",
+    "preprocessing.npz": "9867c7e28ad7df2a4f945f9f8ce8771f1683297c889a5597e1b186537f7bb65a",
+    "schema.json": "b66c931a18e8e5dc9fc1d927aceb4ac2cbd097911dfb252d3e9a42496f6a8963",
+    "seed_2024/model_config.json": "8944e0ebc340e8adbf3379c9881abb6f57c27ef9f23acd80320069e3b703447b",
+    "seed_2024/model_state.pt": "40e9fbed0da4fa915626e5c0bc6874a10a9129448271614fd011d31c46deeb17",
+    "seed_3407/model_config.json": "60ea329db162b8f63cada33d8fb677b05cb2c25472c55d40045a3faf4cc34721",
+    "seed_3407/model_state.pt": "4fa777ae618dcc02d8bbc54b2639a3eb27aa753947495b6ab52c1c2eed1786bf",
+    "seed_5280/model_config.json": "5ec3de74b95b5fe5eed890253992b36971897f9ddeee29145a0435d9a4993b2b",
+    "seed_5280/model_state.pt": "1055d45ddd20d3d698eff4a52a8eafc2ca92f21490da68bc2aa45962224c18c5",
+    "seed_7319/model_config.json": "4546a6bed9cb9acc4f27e2cdfe2f1e49c76b7c59413ff9f7e70d527d65955fd5",
+    "seed_7319/model_state.pt": "a33005e650467af354711ce14dd65ad6b70d72d49d4dc2030ce5dd7732ac769a",
+    "seed_9021/model_config.json": "3a59343291e0c3867ad9a4a7267bf34d5d37751e19f38b5f73c26360571a7458",
+    "seed_9021/model_state.pt": "385e104e86ca3cc3aea8d8fd26d6f2eb7c8224654149ba8c87e93f3372abed30",
+    "threshold.json": "3647d67182a54ed9084f6f6f6ccab083e4e094413a0beb3da147cec1483b9eca"
+  },
+  "schema_version": "1.0.0",
+  "source_data_sha256": {
+    "pathology_csv": "1b738bc4f6650f7bd76f77b1bef61d8df3998333e3bde7f4dee1e4c4ce13a359",
+    "radiomics_csv": "3ea0a993c25d3f157e79225179608a836e65f66062b12aa3cfbc4d37cd444cc1"
+  },
+  "source_git_sha": "734e96b9b71b8d135ed9586a52724f740568db30",
+  "threshold": 0.3529504342004657,
+  "threshold_source_manifest_sha256": "a95fb7e478a95211660bf51a62fc6e54418f130031e34273dfccdced2df9a205",
+  "training_cohort": "all_460"
+}

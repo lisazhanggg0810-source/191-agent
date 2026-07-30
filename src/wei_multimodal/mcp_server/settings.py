@@ -3,18 +3,11 @@
 from __future__ import annotations
 
 import os
-import tempfile
 from pathlib import Path
 from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-
-
-def _default_artifact_root() -> Path:
-    """Return a writable cross-platform directory for ephemeral MCP artifacts."""
-
-    return Path(tempfile.gettempdir()) / "crc_lnm_artifacts"
 
 
 class MCPSettings(BaseModel):
@@ -28,7 +21,8 @@ class MCPSettings(BaseModel):
 
     bundle_directory: Path
     case_root: Path
-    artifact_root: Path = Field(default_factory=_default_artifact_root)
+    artifact_root: Path
+    case_package_jsonl: Path | None = None
     host: str = "127.0.0.1"
     port: int = Field(default=8000, ge=1, le=65535)
     device: Literal["cpu"] = "cpu"
@@ -44,7 +38,6 @@ class MCPSettings(BaseModel):
     max_concurrency: int = Field(default=2, ge=1, le=32)
     allowed_origins: tuple[str, ...] = ("http://127.0.0.1", "http://localhost")
     allowed_hosts: tuple[str, ...] = ("127.0.0.1:*", "localhost:*")
-    dicom_radiomics_mode: Literal["off"] = "off"
 
     @field_validator("allowed_origins")
     @classmethod
@@ -111,10 +104,11 @@ def load_mcp_settings(
     for variable, (field, converter) in _ENV_OVERRIDES.items():
         if variable in environment:
             payload[field] = converter(environment[variable])
-    for field in ("bundle_directory", "case_root", "artifact_root"):
-        if field not in payload:
+    for field in ("bundle_directory", "case_root", "artifact_root", "case_package_jsonl"):
+        raw_value = payload.get(field)
+        if raw_value is None:
             continue
-        value = Path(str(payload[field]))
+        value = Path(str(raw_value))
         payload[field] = (
             value.resolve()
             if value.is_absolute()

@@ -61,6 +61,12 @@ def _require_prediction_payload(payload: Any) -> dict[str, Any]:
             message="A valid prediction artifact is required before report generation.",
             field="prediction_artifact_id",
         )
+    if payload["ct_source_used"] != "precomputed" or payload["fallback_used"] is not False:
+        raise ContractError(
+            ErrorCode.INVALID_STAGE_ORDER,
+            message="Prediction artifact is incompatible with the V1 report contract.",
+            field="prediction_artifact_id",
+        )
     return payload
 
 
@@ -115,13 +121,6 @@ def generate_report(
         media_type="text/html; charset=utf-8",
         payload=html,
     )
-    if bool(prediction["fallback_used"]):
-        raise ContractError(
-            ErrorCode.INVALID_STAGE_ORDER,
-            message="The prediction artifact is incompatible with this report version.",
-            field="prediction_artifact_id",
-        )
-    ct_source_used_value = prediction.get("ct_source_used", "precomputed")
     return ReportData(
         artifact=artifact_ref(metadata),
         report_format="html",
@@ -129,7 +128,7 @@ def generate_report(
         sections=REPORT_SECTIONS,
         heatmap_status="not_available_in_v1",
         feature_attribution_status="not_available_in_v1",
-        ct_source_used=ct_source_used_value,
+        ct_source_used="precomputed",
         fallback_disclosed=False,
         safety_statement=SAFETY_STATEMENT,
     )

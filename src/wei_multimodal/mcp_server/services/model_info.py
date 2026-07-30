@@ -43,7 +43,6 @@ def get_model_info(runtime: RuntimeDependencies) -> ModelInfoData:
         threshold=info.threshold,
         integrity_verified=True,
         independent_test_claim=False,
-        dicom_radiomics_mode=runtime.dicom_radiomics_mode,
         intended_use="research_assistance_only",
     )
 

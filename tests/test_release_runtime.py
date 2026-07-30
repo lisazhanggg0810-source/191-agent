@@ -7,6 +7,7 @@ from uuid import uuid4
 import pytest
 from starlette.testclient import TestClient
 
+from wei_multimodal.case_packages import build_case_packages
 from wei_multimodal.mcp_server.app import create_http_app
 from wei_multimodal.mcp_server.artifact_store import ArtifactStore
 from wei_multimodal.mcp_server.case_repository import CaseRepository
@@ -135,12 +136,78 @@ def test_complete_release_workflow_matches_golden_probability(
     assert report.feature_attribution_status == "not_available_in_v1"
 
 
+def test_real_jsonl_case_runs_the_complete_workflow(
+    runtime: RuntimeDependencies,
+    tmp_path: Path,
+) -> None:
+    case_root = tmp_path / "release_cases"
+    assert build_case_packages(
+        RELEASE_ROOT / "data/release_case_package_groups.jsonl",
+        case_root,
+    ) == 142
+    jsonl_runtime = RuntimeDependencies.create(
+        prediction_service=runtime.prediction_service,
+        artifact_store=ArtifactStore(tmp_path / "jsonl_artifacts"),
+        case_repository=CaseRepository(case_root),
+        tool_timeout_seconds=120,
+        max_concurrency=2,
+    )
+    trace_id = uuid4()
+    case_ref = "PA1104647"
+    clinical = json.loads((case_root / case_ref / "clinical.json").read_text("utf-8"))
+
+    qc = case_data_qc(
+        CaseQCRequest(request_id=uuid4(), trace_id=trace_id, case_ref=case_ref, input={}),
+        jsonl_runtime,
+    )
+    ct = prepare_ct_features(
+        PrepareCTRequest(
+            request_id=uuid4(),
+            trace_id=trace_id,
+            case_ref=case_ref,
+            input={"qc_artifact_id": qc.artifact.artifact_id, "source": {"mode": "precomputed"}},
+        ),
+        jsonl_runtime,
+    )
+    pathology = prepare_pathology_features(
+        PreparePathologyRequest(
+            request_id=uuid4(),
+            trace_id=trace_id,
+            case_ref=case_ref,
+            input={"qc_artifact_id": qc.artifact.artifact_id},
+        ),
+        jsonl_runtime,
+    )
+    prediction = predict_multimodal(
+        PredictMultimodalRequest(
+            request_id=uuid4(),
+            trace_id=trace_id,
+            case_ref=case_ref,
+            input={
+                "qc_artifact_id": qc.artifact.artifact_id,
+                "ct_artifact_id": ct.artifact.artifact_id,
+                "pathology_artifact_id": pathology.artifact.artifact_id,
+                "clinical": clinical,
+            },
+        ),
+        jsonl_runtime,
+    )
+
+    assert qc.passed is True
+    assert ct.feature_count == 1409
+    assert pathology.feature_count == 768
+    assert 0 <= prediction.positive_probability <= 1
+    assert prediction.human_review_required is True
+
+
 def test_real_http_app_requires_bearer_and_becomes_ready(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     token = "release-test-token-" + "a" * 32
     monkeypatch.setenv("CRC_LNM_MCP_BEARER_TOKEN", token)
     settings = load_mcp_settings(RELEASE_ROOT / "configs/mcp.yaml")
+    settings = settings.model_copy(update={"artifact_root": tmp_path / "artifacts"})
     app = create_http_app(settings)
 
     with TestClient(app, base_url="http://127.0.0.1:8000") as client:

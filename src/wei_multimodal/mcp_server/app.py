@@ -11,10 +11,11 @@ import asyncio
 import hmac
 import json
 import os
+import tempfile
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from importlib.resources import files
+from importlib import resources
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
+from wei_multimodal.case_packages import ensure_case_packages
 from wei_multimodal.mcp_server.artifact_store import ArtifactStore
 from wei_multimodal.mcp_server.case_repository import CaseRepository
 from wei_multimodal.mcp_server.services import RuntimeDependencies
@@ -32,13 +34,7 @@ from wei_multimodal.mcp_server.settings import MCPSettings, load_mcp_settings
 from wei_multimodal.mcp_server.tools import register_core_tools
 from wei_multimodal.service.prediction import PredictionService
 
-DEFAULT_CONFIG_PATH = Path(
-    str(
-        files("wei_multimodal.resources")
-        .joinpath("configs")
-        .joinpath("mcp.hosted.yaml")
-    )
-)
+_RUNTIME_ASSET_PACKAGE = "wei_multimodal.mcp_server.runtime_assets"
 
 
 @dataclass(slots=True)
@@ -53,6 +49,8 @@ class RuntimeState:
 def _build_runtime(settings: MCPSettings) -> RuntimeDependencies:
     """Create all long-lived dependencies after validating the deployment bundle."""
 
+    if settings.case_package_jsonl is not None:
+        ensure_case_packages(settings.case_package_jsonl, settings.case_root)
     prediction_service = PredictionService(
         settings.bundle_directory,
         device=settings.device,
@@ -280,11 +278,43 @@ def create_http_app(settings: MCPSettings) -> Any:
     return StaticBearerAuthMiddleware(limited_app, token)
 
 
-def load_default_settings(path: Path | None = None) -> MCPSettings:
-    """Load the configured service without depending on the process working directory."""
+def _bundled_stdio_config_path() -> Path:
+    """Locate the configuration and immutable inputs included in the wheel."""
 
-    selected = path or Path(os.getenv("CRC_LNM_MCP_CONFIG", DEFAULT_CONFIG_PATH))
-    return load_mcp_settings(selected)
+    resource = resources.files(_RUNTIME_ASSET_PACKAGE).joinpath("mcp.stdio.yaml")
+    if not resource.is_file():
+        raise RuntimeError("Bundled STDIO configuration is unavailable.")
+    return Path(str(resource))
+
+
+def _runtime_root() -> Path:
+    """Choose a writable cache without requiring a caller-supplied local path."""
+
+    configured = os.getenv("CRC_LNM_MCP_RUNTIME_ROOT")
+    root = (
+        Path(configured).expanduser()
+        if configured
+        else Path(tempfile.gettempdir()) / "crc-lnm-medical-agent"
+    )
+    return root.resolve()
+
+
+def load_default_settings(path: Path | None = None) -> MCPSettings:
+    """Load an explicit config or the self-contained wheel configuration."""
+
+    configured_path = os.getenv("CRC_LNM_MCP_CONFIG")
+    selected = path or (Path(configured_path) if configured_path else None)
+    if selected is not None:
+        return load_mcp_settings(selected)
+
+    settings = load_mcp_settings(_bundled_stdio_config_path())
+    runtime_root = _runtime_root()
+    return settings.model_copy(
+        update={
+            "case_root": runtime_root / "cases",
+            "artifact_root": runtime_root / "artifacts",
+        }
+    )
 
 
 __all__ = [

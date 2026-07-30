@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crc-lnm-medical-agent"
-version = "1.0.1"
+version = "1.0.2"
 description = "Containerized CRC-LNM research-assistance MCP for Nexent"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
@@ -18,14 +18,22 @@ dependencies = [
     "imbalanced-learn>=0.13,<1",
     "jinja2>=3.1,<4",
     "torch>=2.9,<3",
-    "starlette>=0.46,<1",
-    "uvicorn>=0.34,<1",
+    "starlette>=0.40,<1",
+    "uvicorn[standard]>=0.30,<1",
 ]
 
-[project.urls]
-Repository = "https://github.com/lisazhanggg0810-source/191-agent"
-
 [project.optional-dependencies]
+mcp = [
+    "mcp[cli]>=1.27,<2",
+    "numpy>=2.1,<3",
+    "pandas>=2.2,<3",
+    "pydantic>=2.11,<3",
+    "pyyaml>=6,<7",
+    "scikit-learn>=1.6,<2",
+    "imbalanced-learn>=0.13,<1",
+    "jinja2>=3.1,<4",
+    "torch>=2.9,<3",
+]
 validation = [
     "httpx>=0.28,<1",
     "mypy>=1.17,<2",
@@ -36,21 +44,20 @@ validation = [
     "types-PyYAML>=6.0.12,<7",
 ]
 [project.scripts]
+# ModelScope invokes the package name directly through ``uvx``.  Keep this
+# executable name aligned with the published package in modelscope-mcp.json.
+crc-lnm-medical-agent = "wei_multimodal.mcp_server.__main__:main"
 crc-lnm-mcp = "wei_multimodal.mcp_server.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-"wei_multimodal.mcp_server" = ["templates/*.j2"]
-"wei_multimodal.resources" = [
-    "configs/*.yaml",
-    "models/deployment_bundle/*.json",
-    "models/deployment_bundle/*.sha256",
-    "models/deployment_bundle/*.npz",
-    "models/deployment_bundle/*/*.json",
-    "models/deployment_bundle/*/*.pt",
-    "demo/cases/*/*.json",
+"wei_multimodal.mcp_server" = [
+    "templates/*.j2",
+    "runtime_assets/mcp.stdio.yaml",
+    "runtime_assets/release_case_package_groups.jsonl",
+    "runtime_assets/models/deployment_bundle/**/*",
 ]
 
 # GitHub 托管入口使用 uv 安装依赖时固定选择 CPU 版 PyTorch，避免默认索引拉取
@@ -75,3 +82,8 @@ python_version = "3.13"
 strict = true
 ignore_missing_imports = true
 files = ["src"]
+
+[tool.pytest.ini_options]
+# Disable bytecode caching to allow clean release package checks
+cache_dir = ".pytest_cache"
+addopts = "-p no:cacheprovider --tb=short"
