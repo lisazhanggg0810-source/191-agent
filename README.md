@@ -17,16 +17,21 @@ package rather than repository files or local paths.
     "crc-lnm-research-assistant": {
       "command": "uvx",
       "args": [
-        "crc-lnm-medical-agent@latest",
-        "--transport",
-        "stdio"
-      ]
+        "crc-lnm-medical-agent"
+      ],
+      "env": {
+        "UV_TORCH_BACKEND": "cpu"
+      }
     }
   }
 }
 ```
 
-The published wheel contains the immutable model bundle and trusted release JSONL.
+The console entry point defaults to STDIO, allowing ModelScope to use its minimal
+allowlisted `uvx crc-lnm-medical-agent` command without application arguments. The
+`UV_TORCH_BACKEND=cpu` environment setting keeps the hosted Linux installation on the
+CPU PyTorch index instead of resolving CUDA runtime packages. The published wheel
+contains the immutable model bundle and trusted release JSONL.
 On first launch it creates a verified case-package cache and transient artifacts in a
 writable system cache directory. No local path argument is required. Set
 `CRC_LNM_MCP_RUNTIME_ROOT` only when an operator needs a different writable cache

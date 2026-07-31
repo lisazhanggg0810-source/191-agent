@@ -3,10 +3,11 @@
     "crc-lnm-research-assistant": {
       "command": "uvx",
       "args": [
-        "crc-lnm-medical-agent@latest",
-        "--transport",
-        "stdio"
-      ]
+        "crc-lnm-medical-agent"
+      ],
+      "env": {
+        "UV_TORCH_BACKEND": "cpu"
+      }
     }
   }
 }

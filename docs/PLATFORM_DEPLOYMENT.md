@@ -12,19 +12,23 @@ and the published package name:
     "crc-lnm-research-assistant": {
       "command": "uvx",
       "args": [
-        "crc-lnm-medical-agent@latest",
-        "--transport",
-        "stdio"
-      ]
+        "crc-lnm-medical-agent"
+      ],
+      "env": {
+        "UV_TORCH_BACKEND": "cpu"
+      }
     }
   }
 }
 ```
 
 Do not add comments, local paths, repository commands, secrets, or a second server
-configuration. The wheel includes the deployment bundle and release JSONL. Its default
-startup builds the verified case cache in a writable system cache location, so the
-platform does not need repository-level `configs/` or `data/` files.
+configuration. The package console entry point defaults to STDIO, so no transport
+argument is needed. `UV_TORCH_BACKEND=cpu` prevents hosted Linux installation from
+resolving unnecessary CUDA runtime packages. The wheel includes the deployment bundle
+and release JSONL. Its default startup builds the verified case cache in a writable
+system cache location, so the platform does not need repository-level `configs/` or
+`data/` files.
 
 Passing ModelScope `list_tools` proves only that the service starts and exposes tools.
 Test the required tools manually before using the generated URL in Nexent.

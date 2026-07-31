@@ -6,6 +6,7 @@ import tomllib
 from importlib.resources import files
 from pathlib import Path
 
+from wei_multimodal.mcp_server.__main__ import _parser
 from wei_multimodal.mcp_server.app import load_default_settings
 
 RELEASE_ROOT = Path(__file__).resolve().parents[1]
@@ -19,11 +20,12 @@ def test_modelscope_import_config_has_standard_mcp_servers_root() -> None:
     assert set(payload) == {"mcpServers"}
     server = payload["mcpServers"]["crc-lnm-research-assistant"]
     assert server["command"] == "uvx"
-    assert server["args"] == [
-        "crc-lnm-medical-agent@latest",
-        "--transport",
-        "stdio",
-    ]
+    assert server["args"] == ["crc-lnm-medical-agent"]
+    assert server["env"] == {"UV_TORCH_BACKEND": "cpu"}
+
+
+def test_hosted_console_entry_point_defaults_to_stdio() -> None:
+    assert _parser().parse_args([]).transport == "stdio"
 
 
 def test_hosted_uvx_package_name_is_a_packaged_console_script() -> None:

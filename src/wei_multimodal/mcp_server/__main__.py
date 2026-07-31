@@ -21,7 +21,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--transport",
         choices=("stdio", "streamable-http"),
-        default="streamable-http",
+        default="stdio",
     )
     return parser
 
