@@ -20,7 +20,6 @@ from pathlib import Path
 from typing import Any, Final
 
 from wei_multimodal.mcp_server.errors import ContractError, ErrorCode
-from wei_multimodal.mcp_server.execution import require_active_execution
 from wei_multimodal.mcp_server.security import SHA256_PATTERN
 
 ARTIFACT_ID_PATTERN: Final[re.Pattern[str]] = re.compile(
@@ -255,7 +254,6 @@ class ArtifactStore:
                 temporary.flush()
                 os.fsync(temporary.fileno())
                 temporary_name = temporary.name
-            require_active_execution()
             os.replace(temporary_name, destination)
             temporary_name = None
         finally:
@@ -332,7 +330,6 @@ class ArtifactStore:
         编排绑定检查。
         """
 
-        require_active_execution()
         if artifact_type not in ARTIFACT_PREFIXES:
             raise ValueError("unsupported core artifact type")
         if not trace_id or len(trace_id) > 128:
@@ -343,7 +340,6 @@ class ArtifactStore:
         if effective_ttl.total_seconds() <= 0:
             raise ValueError("ttl_seconds must be positive")
         payload_bytes, payload_encoding = self._serialize_payload(payload)
-        require_active_execution()
         payload_size = len(payload_bytes)
         if payload_size > self._max_artifact_bytes:
             raise ContractError(
@@ -405,10 +401,6 @@ class ArtifactStore:
                 # payload 先发布，metadata 最后发布；读者永远不会看到半成品索引。
                 self._atomic_write(payload_path, payload_bytes)
                 self._atomic_write(meta_path, self._metadata_to_bytes(metadata))
-            except ContractError:
-                meta_path.unlink(missing_ok=True)
-                payload_path.unlink(missing_ok=True)
-                raise
             except OSError as exc:
                 meta_path.unlink(missing_ok=True)
                 payload_path.unlink(missing_ok=True)

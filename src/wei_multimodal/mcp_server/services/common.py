@@ -7,7 +7,7 @@ import hashlib
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Literal
 
 from wei_multimodal.mcp_server.artifact_store import ArtifactMetadata, ArtifactStore
 from wei_multimodal.mcp_server.case_repository import CaseRepository
@@ -27,6 +27,7 @@ class RuntimeDependencies:
     prediction_service: PredictionService
     artifact_store: ArtifactStore
     case_repository: CaseRepository
+    dicom_radiomics_mode: Literal["off"] = "off"
     tool_timeout_seconds: float = 120.0
     tool_semaphore: asyncio.Semaphore = field(
         default_factory=lambda: asyncio.Semaphore(2),

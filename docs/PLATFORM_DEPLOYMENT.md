@@ -1,51 +1,37 @@
-# Platform Deployment
+# 平台部署说明
 
-## ModelScope Hosted STDIO
+## stdio 托管
 
-ModelScope hosted STDIO deployment installs a published PyPI package. Use the exact
-configuration in `configs/modelscope-mcp.json`; it is deliberately limited to `uvx`
-and the published package name:
+平台的“服务配置”必须使用 `configs/modelscope-mcp.json` 的完整 JSON。根字段必须为 `mcpServers`：
 
 ```json
 {
   "mcpServers": {
     "crc-lnm-research-assistant": {
-      "command": "uvx",
+      "command": "uv",
       "args": [
-        "crc-lnm-medical-agent"
-      ],
-      "env": {
-        "UV_TORCH_BACKEND": "cpu"
-      }
+        "run",
+        "--extra",
+        "mcp",
+        "crc-lnm-mcp",
+        "--config",
+        "configs/mcp.local.yaml",
+        "--transport",
+        "stdio"
+      ]
     }
   }
 }
 ```
 
-Do not add comments, local paths, repository commands, secrets, or a second server
-configuration. The package console entry point defaults to STDIO, so no transport
-argument is needed. `UV_TORCH_BACKEND=cpu` prevents hosted Linux installation from
-resolving unnecessary CUDA runtime packages. The wheel includes the deployment bundle
-and release JSONL. Its default startup builds the verified case cache in a writable
-system cache location, so the platform does not need repository-level `configs/` or
-`data/` files.
+不要在该文本框填写 URL、Docker 命令、环境变量或密钥。首次启动会从仓库内的 `data/release_case_package_groups.jsonl` 建立 `artifacts_local/cases` 缓存；该位置必须可写。
 
-Passing ModelScope `list_tools` proves only that the service starts and exposes tools.
-Test the required tools manually before using the generated URL in Nexent.
+## HTTP 容器
 
-## Streamable HTTP Container
+容器端口为 `8000`，MCP 路径为 `/mcp`，健康检查为 `/health/live` 和 `/health/ready`。生产配置要求通过环境变量 `CRC_LNM_MCP_BEARER_TOKEN` 注入至少 32 字节的随机 secret；不要把 token 提交到仓库、YAML、截图或系统提示词。
 
-The container path is separate from hosted STDIO. Build from the release root; the
-Docker build uses `uv sync --locked`, includes the published JSON Schemas, and pins
-the dependency graph in `uv.lock`.
+平台能够设置 Header 时，向 MCP 请求注入 `Authorization: Bearer <secret>`。无法注入 Header 时，只能在服务完全位于受控隔离网络且没有公网入口时使用 `configs/mcp.nexent-internal.yaml`。
 
-Set `CRC_LNM_MCP_BEARER_TOKEN` to a secret of at least 32 bytes. The service exposes
-`/mcp`, `/health/live`, and `/health/ready` on port 8000. Configure the `Authorization`
-header only on a controlled platform connection.
+## 智能体
 
-## Nexent Completion Steps
-
-After ModelScope produces a service URL, add it in Nexent as a custom MCP service,
-enable the six `crc_lnm_*` tools, complete connection and tool tests, debug the agent,
-publish it, and validate a post-publication question. Network reachability from Nexent
-to the ModelScope URL must be tested in the target environment.
+创建智能体后只添加六个 `crc_lnm_*` 工具，并将 `AGENT_PROMPT.md` 内容设为系统提示词。提示词已明确阻止把 NIfTI、WSI、文件路径、任务编号或不同维度的上游特征发送给推理流程。

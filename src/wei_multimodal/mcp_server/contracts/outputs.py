@@ -39,6 +39,7 @@ class ModelInfoData(StrictContract):
     threshold: Annotated[float, Field(ge=0, le=1)]
     integrity_verified: Literal[True]
     independent_test_claim: Literal[False]
+    dicom_radiomics_mode: Literal["off"]
     intended_use: Literal["research_assistance_only"]
 
     @model_validator(mode="after")

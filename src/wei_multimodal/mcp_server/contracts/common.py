@@ -21,7 +21,7 @@ from pydantic import (
 
 CONTRACT_VERSION: Literal["1.1.0"] = "1.1.0"
 SHA256_PATTERN = r"^[0-9a-f]{64}$"
-ARTIFACT_ID_PATTERN = r"^(qc|ctf|pathf|pred|rpt)_[a-f0-9]{32}$"
+ARTIFACT_ID_PATTERN = r"^(qc|qcpermit|ctf|ctpkg|pathf|pred|rpt)_[a-f0-9]{32}$"
 
 
 def _require_utc(value: object) -> object:
@@ -79,10 +79,19 @@ class StatusCode(IntEnum):
     INVALID_STAGE_ORDER = 4090
     ARTIFACT_TYPE_MISMATCH = 4091
     CASE_BINDING_MISMATCH = 4092
+    DICOM_SERIES_NOT_FOUND = 4220
+    DICOM_SERIES_AMBIGUOUS = 4221
+    DICOM_GEOMETRY_INVALID = 4222
+    ROI_REQUIRED = 4223
+    ROI_EMPTY = 4224
+    ROI_GEOMETRY_MISMATCH = 4225
+    EXTRACTION_PROFILE_UNKNOWN = 4226
+    EXTRACTION_PROFILE_UNVERIFIED = 4227
     MODEL_INCOMPATIBLE = 4228
     BUNDLE_INTEGRITY_FAILURE = 5001
     INFERENCE_FAILURE = 5002
     REPORT_GENERATION_FAILURE = 5003
+    RADIOMICS_EXTRACTION_FAILURE = 5004
     SERVICE_UNAVAILABLE = 5030
     CAPACITY_EXCEEDED = 5031
 
@@ -107,10 +116,19 @@ class StatusName(StrEnum):
     INVALID_STAGE_ORDER = "INVALID_STAGE_ORDER"
     ARTIFACT_TYPE_MISMATCH = "ARTIFACT_TYPE_MISMATCH"
     CASE_BINDING_MISMATCH = "CASE_BINDING_MISMATCH"
+    DICOM_SERIES_NOT_FOUND = "DICOM_SERIES_NOT_FOUND"
+    DICOM_SERIES_AMBIGUOUS = "DICOM_SERIES_AMBIGUOUS"
+    DICOM_GEOMETRY_INVALID = "DICOM_GEOMETRY_INVALID"
+    ROI_REQUIRED = "ROI_REQUIRED"
+    ROI_EMPTY = "ROI_EMPTY"
+    ROI_GEOMETRY_MISMATCH = "ROI_GEOMETRY_MISMATCH"
+    EXTRACTION_PROFILE_UNKNOWN = "EXTRACTION_PROFILE_UNKNOWN"
+    EXTRACTION_PROFILE_UNVERIFIED = "EXTRACTION_PROFILE_UNVERIFIED"
     MODEL_INCOMPATIBLE = "MODEL_INCOMPATIBLE"
     BUNDLE_INTEGRITY_FAILURE = "BUNDLE_INTEGRITY_FAILURE"
     INFERENCE_FAILURE = "INFERENCE_FAILURE"
     REPORT_GENERATION_FAILURE = "REPORT_GENERATION_FAILURE"
+    RADIOMICS_EXTRACTION_FAILURE = "RADIOMICS_EXTRACTION_FAILURE"
     SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE"
     CAPACITY_EXCEEDED = "CAPACITY_EXCEEDED"
 
@@ -185,7 +203,9 @@ class ProvenancePayload(StrictContract):
 
 ArtifactType = Literal[
     "case_qc",
+    "dicom_extraction_permit",
     "ct_features",
+    "ct_feature_package",
     "pathology_features",
     "prediction",
     "report",
@@ -193,7 +213,9 @@ ArtifactType = Literal[
 
 _ARTIFACT_PREFIX_BY_TYPE: dict[str, str] = {
     "case_qc": "qc_",
+    "dicom_extraction_permit": "qcpermit_",
     "ct_features": "ctf_",
+    "ct_feature_package": "ctpkg_",
     "pathology_features": "pathf_",
     "prediction": "pred_",
     "report": "rpt_",

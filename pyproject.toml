@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crc-lnm-medical-agent"
-version = "1.0.3"
+version = "1.0.6"
 description = "Containerized CRC-LNM research-assistance MCP for Nexent"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
@@ -21,6 +21,9 @@ dependencies = [
     "starlette>=0.40,<1",
     "uvicorn[standard]>=0.30,<1",
 ]
+
+[project.urls]
+Repository = "https://github.com/lisazhanggg0810-source/191-agent"
 
 [project.optional-dependencies]
 mcp = [
@@ -44,8 +47,6 @@ validation = [
     "types-PyYAML>=6.0.12,<7",
 ]
 [project.scripts]
-# ModelScope invokes the package name directly through ``uvx``.  Keep this
-# executable name aligned with the published package in modelscope-mcp.json.
 crc-lnm-medical-agent = "wei_multimodal.mcp_server.__main__:main"
 crc-lnm-mcp = "wei_multimodal.mcp_server.__main__:main"
 
@@ -84,6 +85,5 @@ ignore_missing_imports = true
 files = ["src"]
 
 [tool.pytest.ini_options]
-# Disable bytecode caching to allow clean release package checks
 cache_dir = ".pytest_cache"
 addopts = "-p no:cacheprovider --tb=short"

@@ -1,1 +1,1 @@
-"""Immutable runtime assets included in the published STDIO wheel."""
+"""Immutable runtime inputs bundled with the published wheel."""

@@ -38,6 +38,7 @@ class MCPSettings(BaseModel):
     max_concurrency: int = Field(default=2, ge=1, le=32)
     allowed_origins: tuple[str, ...] = ("http://127.0.0.1", "http://localhost")
     allowed_hosts: tuple[str, ...] = ("127.0.0.1:*", "localhost:*")
+    dicom_radiomics_mode: Literal["off"] = "off"
 
     @field_validator("allowed_origins")
     @classmethod

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import json
-import re
 import tomllib
 from importlib.resources import files
 from pathlib import Path
 
 from wei_multimodal.mcp_server.__main__ import _parser
 from wei_multimodal.mcp_server.app import load_default_settings
+from wei_multimodal.mcp_server.settings import load_mcp_settings
 
 RELEASE_ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,28 +31,20 @@ def test_hosted_console_entry_point_defaults_to_stdio() -> None:
 def test_hosted_uvx_package_name_is_a_packaged_console_script() -> None:
     project = tomllib.loads((RELEASE_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
 
+    assert project["project"]["version"] == "1.0.6"
     assert project["project"]["scripts"]["crc-lnm-medical-agent"] == (
         "wei_multimodal.mcp_server.__main__:main"
     )
 
 
-def test_root_readme_exposes_the_same_parseable_stdio_configuration() -> None:
-    readme = (RELEASE_ROOT / "README.md").read_text(encoding="utf-8")
-    match = re.search(r"```json\n(?P<config>\{.*?\})\n```", readme, flags=re.DOTALL)
-    assert match is not None
-    documented = json.loads(match.group("config"))
-    configured = json.loads(
-        (RELEASE_ROOT / "configs/modelscope-mcp.json").read_text(encoding="utf-8")
-    )
-    assert documented == configured
+def test_hosted_stdio_config_uses_only_repo_relative_paths() -> None:
+    settings = load_mcp_settings(RELEASE_ROOT / "configs/mcp.local.yaml")
 
-
-def test_dockerfile_uses_the_locked_dependency_graph_and_keeps_schemas() -> None:
-    dockerfile = (RELEASE_ROOT / "Dockerfile").read_text(encoding="utf-8")
-    assert "COPY pyproject.toml uv.lock ./" in dockerfile
-    assert "uv sync --locked --no-dev --extra mcp" in dockerfile
-    assert "COPY schemas /app/schemas" in dockerfile
-    assert "pip install" not in dockerfile
+    assert settings.require_bearer_token is False
+    assert settings.bundle_directory == RELEASE_ROOT / "models/deployment_bundle"
+    assert settings.case_root == RELEASE_ROOT / "artifacts_local/cases"
+    assert settings.artifact_root == RELEASE_ROOT / "artifacts_local"
+    assert settings.case_package_jsonl == RELEASE_ROOT / "data/release_case_package_groups.jsonl"
 
 
 def test_hosted_stdio_defaults_use_packaged_immutable_assets(

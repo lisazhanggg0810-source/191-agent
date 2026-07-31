@@ -123,6 +123,15 @@
         "ct_group_counts": {
           "$ref": "#/$defs/CTGroupCounts"
         },
+        "dicom_radiomics_mode": {
+          "enum": [
+            "off",
+            "shadow",
+            "enabled"
+          ],
+          "title": "Dicom Radiomics Mode",
+          "type": "string"
+        },
         "independent_test_claim": {
           "const": false,
           "title": "Independent Test Claim",
@@ -184,6 +193,7 @@
         "threshold",
         "integrity_verified",
         "independent_test_claim",
+        "dicom_radiomics_mode",
         "intended_use"
       ],
       "title": "ModelInfoData",
@@ -284,10 +294,19 @@
         4090,
         4091,
         4092,
+        4220,
+        4221,
+        4222,
+        4223,
+        4224,
+        4225,
+        4226,
+        4227,
         4228,
         5001,
         5002,
         5003,
+        5004,
         5030,
         5031
       ],
@@ -314,10 +333,19 @@
         "INVALID_STAGE_ORDER",
         "ARTIFACT_TYPE_MISMATCH",
         "CASE_BINDING_MISMATCH",
+        "DICOM_SERIES_NOT_FOUND",
+        "DICOM_SERIES_AMBIGUOUS",
+        "DICOM_GEOMETRY_INVALID",
+        "ROI_REQUIRED",
+        "ROI_EMPTY",
+        "ROI_GEOMETRY_MISMATCH",
+        "EXTRACTION_PROFILE_UNKNOWN",
+        "EXTRACTION_PROFILE_UNVERIFIED",
         "MODEL_INCOMPATIBLE",
         "BUNDLE_INTEGRITY_FAILURE",
         "INFERENCE_FAILURE",
         "REPORT_GENERATION_FAILURE",
+        "RADIOMICS_EXTRACTION_FAILURE",
         "SERVICE_UNAVAILABLE",
         "CAPACITY_EXCEEDED"
       ],
