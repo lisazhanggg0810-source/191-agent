@@ -8,7 +8,7 @@
 
 ## ModelScope 从 GitHub 快速创建
 
-在 ModelScope MCP 广场选择“从 GitHub 仓库快速创建”时，请填写仓库根地址 `https://github.com/lisazhanggg0810-source/191-agent`。平台会从根目录 `README.md` 的 JSON 代码块解析服务配置，因此以下内容必须保持为合法 JSON：
+在 ModelScope MCP 广场选择“从 GitHub 仓库快速创建”时，推荐直接填写 README 完整地址 `https://github.com/lisazhanggg0810-source/191-agent/blob/main/README.md`。不要填写带 `/tree/main` 的分支页面地址；这类地址可能因平台前后端规范化结果不同而使页面停留在“解析中”。平台会从 `README.md` 的 JSON 代码块解析服务配置，因此以下内容必须保持为合法 JSON：
 
 ```json
 {
@@ -16,7 +16,7 @@
     "crc-lnm-research-assistant": {
       "command": "uvx",
       "args": [
-        "crc-lnm-medical-agent"
+        "crc-lnm-medical-agent@latest"
       ],
       "env": {
         "UV_TORCH_BACKEND": "cpu"
@@ -26,4 +26,6 @@
 }
 ```
 
-该入口从 PyPI 安装 `crc-lnm-medical-agent`，当前发布版本为 `1.0.6`；控制台入口默认使用 stdio。不要在上述配置中加入仓库相对路径、Bearer token 或本地文件路径。
+该入口从 PyPI 安装 `crc-lnm-medical-agent`；当前 `latest` 发布版本为 `1.0.6`，控制台入口默认使用 stdio。不要在上述配置中加入仓库相对路径、Bearer token 或本地文件路径。
+
+正常解析通常在一分钟内完成。若页面超过 60 秒仍停留在“解析中”，请取消后刷新创建页并改用上述 README 完整地址；仍未完成时，点击“进入自定义创建”，选择 STDIO，并直接粘贴同一份 `configs/modelscope-mcp.json` 配置。自定义创建不依赖 GitHub 自动解析。

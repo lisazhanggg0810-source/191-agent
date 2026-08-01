@@ -25,7 +25,7 @@ def test_modelscope_import_config_has_standard_mcp_servers_root() -> None:
     assert set(payload) == {"mcpServers"}
     server = payload["mcpServers"]["crc-lnm-research-assistant"]
     assert server["command"] == "uvx"
-    assert server["args"] == ["crc-lnm-medical-agent"]
+    assert server["args"] == ["crc-lnm-medical-agent@latest"]
     assert server["env"] == {"UV_TORCH_BACKEND": "cpu"}
 
 
@@ -35,6 +35,10 @@ def test_root_readme_exposes_same_parseable_modelscope_configuration() -> None:
 
     assert len(json_blocks) == 1
     assert json.loads(json_blocks[0]) == _modelscope_import_config()
+    assert (
+        "https://github.com/lisazhanggg0810-source/191-agent/blob/main/README.md"
+        in readme
+    )
 
 
 def test_hosted_console_entry_point_defaults_to_stdio() -> None:

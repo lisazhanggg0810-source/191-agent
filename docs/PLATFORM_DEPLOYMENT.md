@@ -2,7 +2,7 @@
 
 ## stdio 托管
 
-在 ModelScope MCP 广场选择“从 GitHub 仓库快速创建”时，填写仓库根地址 `https://github.com/lisazhanggg0810-source/191-agent`。平台会从仓库根目录 `README.md` 的 JSON 代码块解析服务配置；该代码块必须与 `configs/modelscope-mcp.json` 保持一致，且根字段必须为 `mcpServers`：
+在 ModelScope MCP 广场选择“从 GitHub 仓库快速创建”时，推荐填写 README 完整地址 `https://github.com/lisazhanggg0810-source/191-agent/blob/main/README.md`。不要使用带 `/tree/main` 的分支页面地址；平台前后端对这类地址的规范化结果可能不同，导致页面一直停留在“解析中”。平台会从 `README.md` 的 JSON 代码块解析服务配置；该代码块必须与 `configs/modelscope-mcp.json` 保持一致，且根字段必须为 `mcpServers`：
 
 ```json
 {
@@ -10,7 +10,7 @@
     "crc-lnm-research-assistant": {
       "command": "uvx",
       "args": [
-        "crc-lnm-medical-agent"
+        "crc-lnm-medical-agent@latest"
       ],
       "env": {
         "UV_TORCH_BACKEND": "cpu"
@@ -20,7 +20,9 @@
 }
 ```
 
-该配置通过 PyPI 启动 `crc-lnm-medical-agent`，当前发布版本为 `1.0.6`，控制台入口默认使用 stdio。发布包已经包含不可变的模型资源和病例 JSONL；首次启动会在平台可写的运行时目录建立缓存，不依赖仓库相对路径。不要在配置中加入 URL、Docker 命令、Bearer token、密钥或本地文件路径。
+该配置通过 PyPI 启动 `crc-lnm-medical-agent@latest`，当前 `latest` 发布版本为 `1.0.6`，控制台入口默认使用 stdio。发布包已经包含不可变的模型资源和病例 JSONL；首次启动会在平台可写的运行时目录建立缓存，不依赖仓库相对路径。不要在配置中加入 URL、Docker 命令、Bearer token、密钥或本地文件路径。
+
+正常解析通常在一分钟内完成。若超过 60 秒仍停留在“解析中”，取消并刷新页面后使用上述 README 完整地址重试；若仍未完成，点击“进入自定义创建”，选择 STDIO，并粘贴 `configs/modelscope-mcp.json` 的完整内容。自定义创建会绕过 GitHub 自动解析，后续仍使用同一个 PyPI 包执行部署检测。
 
 ## HTTP 容器
 
