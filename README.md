@@ -6,6 +6,11 @@
 
 完整的本地测试、iData JSONL 使用方式、截图问题说明、托管配置和 Docker 部署步骤见 [使用说明](使用说明.md)。智能体系统提示词见 [docs/AGENT_PROMPT.md](docs/AGENT_PROMPT.md)。
 
+## ModelScope 从 GitHub 快速创建
+
+在 ModelScope MCP 广场选择“从 GitHub 仓库快速创建”时，请填写仓库根地址 `https://github.com/lisazhanggg0810-source/191-agent`。平台会从根目录 `README.md` 的 JSON 代码块解析服务配置，因此以下内容必须保持为合法 JSON：
+
+```json
 {
   "mcpServers": {
     "crc-lnm-research-assistant": {
@@ -19,3 +24,6 @@
     }
   }
 }
+```
+
+该入口从 PyPI 安装 `crc-lnm-medical-agent`，当前发布版本为 `1.0.6`；控制台入口默认使用 stdio。不要在上述配置中加入仓库相对路径、Bearer token 或本地文件路径。
