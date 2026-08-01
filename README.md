@@ -5,3 +5,17 @@
 原始 NIfTI、DICOM、WSI、patch、文件路径和不同维度的外部特征均不是可推理输入。给定 JSONL 会在构建期或本地 stdio 首次启动时转换为受控病例包；MCP 调用只使用 `case_ref`。
 
 完整的本地测试、iData JSONL 使用方式、截图问题说明、托管配置和 Docker 部署步骤见 [使用说明](使用说明.md)。智能体系统提示词见 [docs/AGENT_PROMPT.md](docs/AGENT_PROMPT.md)。
+
+{
+  "mcpServers": {
+    "crc-lnm-research-assistant": {
+      "command": "uvx",
+      "args": [
+        "crc-lnm-medical-agent"
+      ],
+      "env": {
+        "UV_TORCH_BACKEND": "cpu"
+      }
+    }
+  }
+}
