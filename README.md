@@ -16,16 +16,18 @@
     "crc-lnm-research-assistant": {
       "command": "uvx",
       "args": [
-        "crc-lnm-medical-agent@latest"
-      ],
-      "env": {
-        "UV_TORCH_BACKEND": "cpu"
-      }
+        "--no-progress",
+        "--torch-backend",
+        "cpu",
+        "--from",
+        "crc-lnm-medical-agent==1.0.6",
+        "crc-lnm-medical-agent"
+      ]
     }
   }
 }
 ```
 
-该入口从 PyPI 安装 `crc-lnm-medical-agent`；当前 `latest` 发布版本为 `1.0.6`，控制台入口默认使用 stdio。不要在上述配置中加入仓库相对路径、Bearer token 或本地文件路径。
+该入口通过 `uvx --from` 从 PyPI 显式安装并启动 `crc-lnm-medical-agent==1.0.6`，控制台入口默认使用 stdio。固定版本和入口名可以避免托管平台误判 `uvx 包名@latest`；`--torch-backend cpu` 使 PyTorch 使用 CPU 包源，并避免平台要求另行填写环境变量。不要在上述配置中加入仓库相对路径、Bearer token 或本地文件路径。
 
 正常解析通常在一分钟内完成。若页面超过 60 秒仍停留在“解析中”，请取消后刷新创建页并改用上述 README 完整地址；仍未完成时，点击“进入自定义创建”，选择 STDIO，并直接粘贴同一份 `configs/modelscope-mcp.json` 配置。自定义创建不依赖 GitHub 自动解析。

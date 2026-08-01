@@ -25,8 +25,15 @@ def test_modelscope_import_config_has_standard_mcp_servers_root() -> None:
     assert set(payload) == {"mcpServers"}
     server = payload["mcpServers"]["crc-lnm-research-assistant"]
     assert server["command"] == "uvx"
-    assert server["args"] == ["crc-lnm-medical-agent@latest"]
-    assert server["env"] == {"UV_TORCH_BACKEND": "cpu"}
+    assert server["args"] == [
+        "--no-progress",
+        "--torch-backend",
+        "cpu",
+        "--from",
+        "crc-lnm-medical-agent==1.0.6",
+        "crc-lnm-medical-agent",
+    ]
+    assert "env" not in server
 
 
 def test_root_readme_exposes_same_parseable_modelscope_configuration() -> None:

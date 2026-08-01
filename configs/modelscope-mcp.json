@@ -3,11 +3,13 @@
     "crc-lnm-research-assistant": {
       "command": "uvx",
       "args": [
-        "crc-lnm-medical-agent@latest"
-      ],
-      "env": {
-        "UV_TORCH_BACKEND": "cpu"
-      }
+        "--no-progress",
+        "--torch-backend",
+        "cpu",
+        "--from",
+        "crc-lnm-medical-agent==1.0.6",
+        "crc-lnm-medical-agent"
+      ]
     }
   }
 }
